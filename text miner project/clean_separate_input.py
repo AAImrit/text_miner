@@ -20,7 +20,7 @@ def basicClean (sentence):
     #find all unclosed brackets and close them
     return cleanSen
 
-def find_closing_posi (opPosi, sentence):
+def find_closing_posi (opPosi, sentence, special=False):
     '''
     Given the opening position of a bracket, find the corresponding closing bracket position
 
@@ -33,14 +33,17 @@ def find_closing_posi (opPosi, sentence):
     '''
     substring = sentence[opPosi:]
 
-    closeMatch = re.search(r'\)', substring)
+    expression = '\)'
+    if special:
+        expression = '[&)]'
+    closeMatch = re.search(expression, substring)
 
     if closeMatch:
         return (closeMatch.start()+opPosi)
 
     return len(sentence)-1
 
-def find_opening_posi (closePosi, sentence):
+def find_opening_posi (closePosi, sentence, special=False):
     '''
     Given the closing position of a bracket, find the corresponding opening bracket position
 
@@ -51,39 +54,44 @@ def find_opening_posi (closePosi, sentence):
     Returns:
      - (int): the index of the opening bracket
     '''
+    #substring = sentence[:closePosi]
     substring = sentence[:closePosi]
     print(substring)
+    expression = '\([^()]*\)$'
+    if special:
+        expression = '.{0,%d}[&)]' % closePosi
+        
+    opMatch = re.search(expression, substring)
 
-    opMatch = re.search(r'\([^()]*\)$', substring)
-    print(opMatch)
+    #opMatch = re.search(r'\([^()]*\)$', substring)
     if opMatch:
         return opMatch.start()
     
     return 0
 
-def find_closest (posi, sentence, isRight=False):
-    substring = sentence[:posi]
-    if isRight:
-        substring = sentence[posi:]
-
+def find_closest_terminatorR (posi, sentence):
+    substring = sentence[posi:]
 
 def replace_and (sentence):
     posi = sentence.find(AND_OP)
     miniLeft = ""
     miniRigth=""
+    special=False
 
     if posi == -1:
         return sentence
     
-    if sentence[posi-1] == ")":
-        opPosi = find_opening_posi(posi, sentence)
-        print(opPosi)
+    if sentence[posi-1] != ")":
+        special = True
 
+    opPosi = find_opening_posi(posi, sentence, special)
     miniLeft = sentence[:opPosi] + "(?=*" + sentence[opPosi:posi] + ")"
     
-    if sentence[posi+1] == "(":
-        closePosi = find_closing_posi(posi+1, sentence)
-    
+    special=False
+    if sentence[posi+1] != "(":
+        special = True
+
+    closePosi = find_closing_posi(posi+1, sentence)
     miniRigth = "(?=*" + sentence[posi+1:closePosi+1] + ")" + sentence[closePosi+1:]
     
     sentence = miniLeft+miniRigth
@@ -95,7 +103,9 @@ def replace_and (sentence):
 
 if __name__ == '__main__':
     #sentence = "((pin)&((lift|lead)|((test)&(right))))&(test)"
-    sentence="(test|new)&(free|you)"
+    #sentence = "(pin&(lift|lead)|(test&right))&test"
+    #sentence="(test|new)&(free|you)"
+    sentence="(test&new)"
     sentence=replace_and(sentence)
     sentence=replace_and(sentence)
     sentence=replace_and(sentence)
