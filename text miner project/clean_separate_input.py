@@ -4,18 +4,53 @@ OR_OP = '|'
 AND_OP = '&'
 
 def basicClean (sentence):
-    #find all unclosed brackets and close them
+    '''
+    cleans up the sentence to make sure every thing is ok
+
+    Args:
+    sentence (string): sentence we want to clean
+
+    Returns:
+    cleanSen (string): sentence that has been cleaned
+    '''
+    #remove unexpected characters at the begining and end of the user input
     reExpression = '^[\)' + AND_OP + OR_OP + ']|[' + AND_OP + OR_OP + '\(]+$'
     cleanSen = re.sub(reExpression, "", sentence)
+
     #find all unclosed brackets and close them
+    return cleanSen
 
 def find_closing_posi (opPosi, sentence):
+    '''
+    Given the opening position of a bracket, find the corresponding closing bracket position
+
+    Args:
+    opPosi: index of the opening bracker
+    sentence (string): sentence we want to clean
+
+    Returns:
+     - (int): the index of the closing bracket
+    '''
     substring = sentence[opPosi:]
 
     closeMatch = re.search(r'\)', substring)
-    return (closeMatch.start()+opPosi)
+
+    if closeMatch:
+        return (closeMatch.start()+opPosi)
+
+    return len(sentence)-1
 
 def find_opening_posi (closePosi, sentence):
+    '''
+    Given the closing position of a bracket, find the corresponding opening bracket position
+
+    Args:
+    closePosi: index of the closing bracker
+    sentence (string): sentence we want to clean
+
+    Returns:
+     - (int): the index of the opening bracket
+    '''
     substring = sentence[:closePosi]
     print(substring)
 
@@ -24,7 +59,13 @@ def find_opening_posi (closePosi, sentence):
     if opMatch:
         return opMatch.start()
     
-    return -1
+    return 0
+
+def find_closest (posi, sentence, isRight=False):
+    substring = sentence[:posi]
+    if isRight:
+        substring = sentence[posi:]
+
 
 def replace_and (sentence):
     posi = sentence.find(AND_OP)
@@ -38,8 +79,7 @@ def replace_and (sentence):
         opPosi = find_opening_posi(posi, sentence)
         print(opPosi)
 
-    if opPosi != -1:
-        miniLeft = sentence[:opPosi] + "(?=*" + sentence[opPosi:posi] + ")"
+    miniLeft = sentence[:opPosi] + "(?=*" + sentence[opPosi:posi] + ")"
     
     if sentence[posi+1] == "(":
         closePosi = find_closing_posi(posi+1, sentence)
