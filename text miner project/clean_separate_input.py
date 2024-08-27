@@ -54,58 +54,64 @@ def find_opening_posi (closePosi, sentence, special=False):
     Returns:
      - (int): the index of the opening bracket
     '''
-    #substring = sentence[:closePosi]
     substring = sentence[:closePosi]
-    print(substring)
+    if special: #this is for finding potential opening braket of a sentence missing a closing braket
+        substring += ")"
+
     expression = '\([^()]*\)$'
-    if special:
-        expression = '.{0,%d}[&)]' % closePosi
-        
     opMatch = re.search(expression, substring)
 
-    #opMatch = re.search(r'\([^()]*\)$', substring)
     if opMatch:
-        return opMatch.start()
+        return opMatch.start(), True
     
-    return 0
-
-def find_closest_terminatorR (posi, sentence):
-    substring = sentence[posi:]
+    return 0, False
 
 def replace_and (sentence):
+
     posi = sentence.find(AND_OP)
+    if posi == -1: #there are no & in the search resequest
+        return sentence
+
     miniLeft = ""
     miniRigth=""
     special=False
 
-    if posi == -1:
-        return sentence
-    
-    if sentence[posi-1] != ")":
-        special = True
+    if sentence[posi-1] != ")": #missing closing bracket
+        #this is not for full proofing, it only work in cases when there is one word for exampple (test&right)
+        special=True
+        specialOpPosi = find_opening_posi(posi, sentence, special)
+        if specialOpPosi[1]: #an opening was actually matching
+            opPosi = specialOpPosi[0]
+            sentence = sentence[:opPosi] + "(" + sentence[opPosi:posi] + ")" + sentence[posi:]
+            posi=sentence.find(AND_OP) #recalculating the position of the posi
 
-    opPosi = find_opening_posi(posi, sentence, special)
-    miniLeft = sentence[:opPosi] + "(?=*" + sentence[opPosi:posi] + ")"
+
+    opPosi = find_opening_posi(posi, sentence)[0]
+    miniLeft = sentence[:opPosi] + "(?=.*" + sentence[opPosi:posi] + ")"
     
     special=False
     if sentence[posi+1] != "(":
         special = True
 
     closePosi = find_closing_posi(posi+1, sentence)
-    miniRigth = "(?=*" + sentence[posi+1:closePosi+1] + ")" + sentence[closePosi+1:]
+    miniRigth = "(?=.*" + sentence[posi+1:closePosi+1] + ")" + sentence[closePosi+1:]
     
     sentence = miniLeft+miniRigth
     print(sentence)
-    return sentence
-    #replace_and(sentence)
 
-        #check right
+    return replace_and(sentence)
+
+    #sentence=replace_and(sentence)
+    #print("pass " + sentence)
 
 if __name__ == '__main__':
-    #sentence = "((pin)&((lift|lead)|((test)&(right))))&(test)"
-    #sentence = "(pin&(lift|lead)|(test&right))&test"
+    #sentence = "(pin&(lift|lead))|(test&right)"
+    sentence = "(lift|lead)&pin"
+    #sentence = "(test&right)"
+    #sentence = "((pin)&(lift|lead))|((test)&(new))" #((?=*(pin))(?=*(lift|lead)))|((?=*(test))(?=*(new))) -> right expresion
     #sentence="(test|new)&(free|you)"
-    sentence="(test&new)"
-    sentence=replace_and(sentence)
-    sentence=replace_and(sentence)
-    sentence=replace_and(sentence)
+    #sentence="(test&new)"
+    #sentence = "pin&(lift|new)"
+    test=replace_and(sentence)
+    print("\nFinal Version:")
+    print(test)
