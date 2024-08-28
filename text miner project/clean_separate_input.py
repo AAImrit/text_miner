@@ -78,11 +78,9 @@ def replace_and (sentence):
     miniRigth=""
 
     #for side right of &
-    special=False
     if sentence[posi-1] != ")": #missing closing bracket
         #this is not for full proofing, it only work in cases when there is one word for exampple (test&right)
-        special=True
-        specialOpPosi = find_opening_posi(posi, sentence, special)
+        specialOpPosi = find_opening_posi(posi, sentence, special=True)
         if specialOpPosi[1]: #an opening was actually matching
             opPosi = specialOpPosi[0]
             sentence = sentence[:opPosi] + "(" + sentence[opPosi:posi] + ")" + sentence[posi:]
@@ -92,11 +90,9 @@ def replace_and (sentence):
     miniLeft = sentence[:opPosi] + "(?=.*" + sentence[opPosi:posi] + ")"
     
     #for side left of &
-    special=False
     if sentence[posi+1] != "(": #missing opening bracket
         #this is not for full proofing, it only work in cases when there is one word for exampple (test&right)
-        special=True
-        specialClosePosi = find_closing_posi(posi+1, sentence, special)
+        specialClosePosi = find_closing_posi(posi+1, sentence, special=True)
         if specialClosePosi[1]: #an opening was actually matching
             closePosi = specialClosePosi[0]
             sentence = sentence[:posi+1] + "(" + sentence[posi+1:closePosi+1] + ")" + sentence[closePosi+1:]
@@ -111,9 +107,6 @@ def replace_and (sentence):
     print(sentence)
 
     return replace_and(sentence)
-
-    #sentence=replace_and(sentence)
-    #print("pass " + sentence)
 
 if __name__ == '__main__':
     sentence = "(pin&(lift|lead))|(test&right)"
