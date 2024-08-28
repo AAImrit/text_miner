@@ -69,6 +69,17 @@ def find_opening_posi (closePosi, sentence, special=False):
     return 0, False
 
 def replace_and (sentence):
+    '''
+    this is a recursive function, it finds closest position of an & symbol and replaces 
+    it with the expression needed to make the search regex expression. It keeps going until no
+    & expression remains
+
+    Args:
+    sentence (string): the search request
+    
+    Returns:
+    sentence (string): the regex expression
+    '''
 
     posi = sentence.find(AND_OP)
     if posi == -1: #there are no & in the search resequest
@@ -107,6 +118,12 @@ def replace_and (sentence):
     print(sentence)
 
     return replace_and(sentence)
+
+def make_regex_expression (user_expression):
+    # the function that will be called to make the expression.
+    final_regex = basicClean(user_expression) #might have to comment, function not tested
+    final_regex = replace_and(final_regex)
+    return final_regex
 
 if __name__ == '__main__':
     sentence = "(pin&(lift|lead))|(test&right)"
