@@ -32,16 +32,18 @@ def find_closing_posi (opPosi, sentence, special=False):
      - (int): the index of the closing bracket
     '''
     substring = sentence[opPosi:]
+    if special:
+        substring = "(" + substring
 
     expression = '\)'
-    if special:
-        expression = '[&)]'
+    #if special:
+    #    expression = '[&)]'
     closeMatch = re.search(expression, substring)
 
     if closeMatch:
-        return (closeMatch.start()+opPosi)
+        return (closeMatch.start()+opPosi), True
 
-    return len(sentence)-1
+    return len(sentence)-1, False
 
 def find_opening_posi (closePosi, sentence, special=False):
     '''
@@ -74,8 +76,9 @@ def replace_and (sentence):
 
     miniLeft = ""
     miniRigth=""
-    special=False
 
+    #for side right of &
+    special=False
     if sentence[posi-1] != ")": #missing closing bracket
         #this is not for full proofing, it only work in cases when there is one word for exampple (test&right)
         special=True
@@ -85,15 +88,23 @@ def replace_and (sentence):
             sentence = sentence[:opPosi] + "(" + sentence[opPosi:posi] + ")" + sentence[posi:]
             posi=sentence.find(AND_OP) #recalculating the position of the posi
 
-
     opPosi = find_opening_posi(posi, sentence)[0]
     miniLeft = sentence[:opPosi] + "(?=.*" + sentence[opPosi:posi] + ")"
     
+    #for side left of &
     special=False
-    if sentence[posi+1] != "(":
-        special = True
+    if sentence[posi+1] != "(": #missing opening bracket
+        #this is not for full proofing, it only work in cases when there is one word for exampple (test&right)
+        special=True
+        specialClosePosi = find_closing_posi(posi+1, sentence, special)
+        if specialClosePosi[1]: #an opening was actually matching
+            closePosi = specialClosePosi[0]
+            sentence = sentence[:posi+1] + "(" + sentence[posi+1:closePosi+1] + ")" + sentence[closePosi+1:]
+            print("special close, opening bracket missing")
+            print(sentence)
+            posi=sentence.find(AND_OP) #recalculating the position of the posi
 
-    closePosi = find_closing_posi(posi+1, sentence)
+    closePosi = find_closing_posi(posi+1, sentence)[0]
     miniRigth = "(?=.*" + sentence[posi+1:closePosi+1] + ")" + sentence[closePosi+1:]
     
     sentence = miniLeft+miniRigth
@@ -105,8 +116,8 @@ def replace_and (sentence):
     #print("pass " + sentence)
 
 if __name__ == '__main__':
-    #sentence = "(pin&(lift|lead))|(test&right)"
-    sentence = "(lift|lead)&pin"
+    sentence = "(pin&(lift|lead))|(test&right)"
+    #sentence = "(lift|lead)&pin"
     #sentence = "(test&right)"
     #sentence = "((pin)&(lift|lead))|((test)&(new))" #((?=*(pin))(?=*(lift|lead)))|((?=*(test))(?=*(new))) -> right expresion
     #sentence="(test|new)&(free|you)"
