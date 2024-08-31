@@ -106,11 +106,9 @@ def replace_and (sentence):
         specialClosePosi = find_closing_posi(posi+1, sentence, special=True)
         if specialClosePosi[1]: #an opening was actually matching
             closePosi = specialClosePosi[0]
-            print(sentence[posi+1:closePosi])
             sentence = sentence[:posi+1] + "(" + sentence[posi+1:closePosi] + ")" + sentence[closePosi:]
             posi=sentence.find(AND_OP) #recalculating the position of the posi
 
-    print(sentence)
     closePosi = find_closing_posi(posi+1, sentence)[0]
     miniRigth = "(?=.*" + sentence[posi+1:closePosi+1] + ")" + sentence[closePosi+1:]
     

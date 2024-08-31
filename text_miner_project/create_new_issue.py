@@ -94,8 +94,8 @@ def create_new_issue_main (content, file_path, common_issues_path, col_name="Des
             break
 
         test_df = test_expression(expression, file_path, content, col_name)
-        print("Here's a sample of the retrieved info. The full test file is located: " + "new_dataset/test.csv")
-        #print("Here's a sample of the retrieved info. The full test file is located: " + file_path)
+        #print("Here's a sample of the retrieved info. The full test file is located: " + "new_dataset/test.csv")
+        print("Here's a sample of the retrieved info. The full test file is located: " + file_path)
         print(test_df.head(20))
     
         user_validation = input("Is this what you were looking for? (0 - yes, 1 - no): ")
@@ -103,8 +103,8 @@ def create_new_issue_main (content, file_path, common_issues_path, col_name="Des
         if user_validation == "0":
             name = get_closure_info(common_issues_path, common_issues_list, user_search, expression)
             test_df.to_csv(file_path[:-8]+name+".csv", index=False)
-            print("Result has been save in: new_dataset/" + name+".csv")
-            #print("Result has been save in:" + file_path[:-8]+name+".csv")
+            #print("Result has been save in: new_dataset/" + name+".csv")
+            print("Result has been save in:" + file_path[:-8]+name+".csv")
 
 
 if __name__ == '__main__':
