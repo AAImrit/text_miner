@@ -55,7 +55,7 @@ def create_new_issue(common_issue_path, file_name="dataset\\all_data.csv"):
         user_confirmation = input("Is the data in: '" + file_name + "' (1-Yes, 0-No): \n")
 
         if user_confirmation == '0':
-            file_name = input("Enter the file path: \n")
+            file_name = input("Enter the file path: \n") #in case we want to search in a different place
 
             path=True
             user_confirmation = '1'
@@ -68,7 +68,7 @@ def create_new_issue(common_issue_path, file_name="dataset\\all_data.csv"):
     if path == True:
         col_name_exist=False
         while col_name_exist == False:
-            col_name = input("Enter the name of the column to search through: ")
+            col_name = input("Enter the name of the column to search through: \n")
 
             if col_name not in data.columns:
                 print(col_name + " is not in the data. The following are the columns in the dataset:")

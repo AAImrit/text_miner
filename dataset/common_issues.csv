@@ -1,2 +1,2 @@
-name,looking,regex,master dispatch
-Lift Lead,(lift&lead),((?=.*(lift))(?=.*(lead))),
+name,looking,regex,date created
+

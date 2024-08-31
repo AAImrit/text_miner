@@ -8,8 +8,9 @@ from datetime import datetime
 
 from create_expression import make_regex_expression
 
+pd.set_option('display.max_columns', None) #to not hide any columns when printin
+
 def get_user_input():
-    #!!!!Should also get the name of the column we are searching
     '''
     gets user expression, what they are looking for, turns in into regex 
     expression and ask user to validate that expression is good
@@ -42,12 +43,11 @@ def test_expression(regex_expression, file_path, content, col_name):
     Args:
     regex_expression (string): regex expression for the search we want to perform
     file_path (string): path for where to save file created
-    content (pd DataFrame): content we want to filter through -> currently pd dataframe, will be 
-    changed to a something else once figure out how to read from l2l api call
+    content (pd DataFrame): content we want to filter through
     col_name (string): The column through which we are searching
 
     Returns:
-    none
+    the newly created dataframe
     '''
 
     new_df = pd.DataFrame(columns = list(content.columns))
@@ -64,9 +64,12 @@ def test_expression(regex_expression, file_path, content, col_name):
     new_df = new_df.reset_index()
     #print(new_df)
     new_df.to_csv(file_path, index=False)
+    return new_df
 
 def get_closure_info (common_issues_path, common_issue_list, user_search, re_expression):
-    #get info for the issue to log the regex used, that way later we can use the same regex to pull again
+    #get info for the issue to log the regex used, that way later we can use the same regex to pull 
+    #also saves info in the common_issues list
+
     name_issue = input("Enter Name of issue:\n")
 
     now = datetime.now()
@@ -87,18 +90,15 @@ def create_new_issue_main (content, file_path, common_issues_path, col_name="Des
         if user_search == "0":
             break
 
-        test_expression(expression, file_path, content, col_name)
-
-        print ("The test file is located: " + file_path)
+        test_df = test_expression(expression, file_path, content, col_name)
+        print("Here's a sample of the retrieved info. The full test file is located: " + file_path)
+        print(test_df.head(20))
+    
         user_validation = input("Is this what you were looking for? (0 - yes, 1 - no): ")
         
         if user_validation == "0":
             name = get_closure_info(common_issues_path, common_issues_list, user_search, expression)
-            test_expression(expression, file_path[:-8]+name+".csv", content, col_name)
+            test_df.to_csv(file_path[:-8]+name+".csv", index=False)
 
-    #Need to ask person to validate the file created or if they want to change what
-    #they searched for
-    #once validated, save in common_issue file
-    
 if __name__ == '__main__':
     print ("Why")
