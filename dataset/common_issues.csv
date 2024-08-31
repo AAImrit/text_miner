@@ -1,3 +1,4 @@
 name,looking,regex,date created
 Cokroach and Cat,(cockroach&cat),((?=.*(cockroach))(?=.*(cat))),31/08/2024 00:53:08
 inspector and animals,(inspector|critic)&(cat|rat|cockroach),(?=.*(inspector|critic))(?=.*(cat|rat|cockroach)),31/08/2024 01:35:07
+inspector or critic and animals,(inspector|critic)&(cat|rat|roach),(?=.*(inspector|critic))(?=.*(cat|rat|roach)),31/08/2024 02:06:03
