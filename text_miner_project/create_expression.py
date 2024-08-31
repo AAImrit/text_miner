@@ -107,15 +107,12 @@ def replace_and (sentence):
         if specialClosePosi[1]: #an opening was actually matching
             closePosi = specialClosePosi[0]
             sentence = sentence[:posi+1] + "(" + sentence[posi+1:closePosi+1] + ")" + sentence[closePosi+1:]
-            print("special close, opening bracket missing")
-            print(sentence)
             posi=sentence.find(AND_OP) #recalculating the position of the posi
 
     closePosi = find_closing_posi(posi+1, sentence)[0]
     miniRigth = "(?=.*" + sentence[posi+1:closePosi+1] + ")" + sentence[closePosi+1:]
     
     sentence = miniLeft+miniRigth
-    print(sentence)
 
     return replace_and(sentence)
 
