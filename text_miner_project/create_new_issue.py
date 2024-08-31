@@ -6,7 +6,7 @@ import re
 import pandas as pd
 from datetime import datetime
 
-from create_expression import make_regex_expression
+from create_expression import *
 
 pd.set_option('display.max_columns', None) #to not hide any columns when printin
 
@@ -32,7 +32,9 @@ def get_user_input():
             break
         
         expression = make_regex_expression(search)
-        user_validation = input("Is " + expression + " the correction expression. Enter 0 for yes, 1 for no:\n")
+        #user_validation = input("Is " + expression + " the correction expression. Enter 0 for yes, 1 for no:\n")
+        print (search + " resulted in the following expression: " + expression)
+        user_validation = '0'
     
     return expression, search
 
@@ -79,6 +81,7 @@ def get_closure_info (common_issues_path, common_issue_list, user_search, re_exp
     common_issue_list = common_issue_list.append(new_issue, ignore_index=True)
 
     common_issue_list.to_csv(common_issues_path, index=False)
+    print("New issue has been logged into common issues")
     return name_issue
 
 def create_new_issue_main (content, file_path, common_issues_path, col_name="Description"):
@@ -91,7 +94,8 @@ def create_new_issue_main (content, file_path, common_issues_path, col_name="Des
             break
 
         test_df = test_expression(expression, file_path, content, col_name)
-        print("Here's a sample of the retrieved info. The full test file is located: " + file_path)
+        print("Here's a sample of the retrieved info. The full test file is located: " + "new_dataset/test.csv")
+        #print("Here's a sample of the retrieved info. The full test file is located: " + file_path)
         print(test_df.head(20))
     
         user_validation = input("Is this what you were looking for? (0 - yes, 1 - no): ")
@@ -99,6 +103,9 @@ def create_new_issue_main (content, file_path, common_issues_path, col_name="Des
         if user_validation == "0":
             name = get_closure_info(common_issues_path, common_issues_list, user_search, expression)
             test_df.to_csv(file_path[:-8]+name+".csv", index=False)
+            print("Result has been save in: new_dataset/" + name+".csv")
+            #print("Result has been save in:" + file_path[:-8]+name+".csv")
+
 
 if __name__ == '__main__':
     print ("Why")

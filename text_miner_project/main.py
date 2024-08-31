@@ -55,7 +55,7 @@ def create_new_issue(common_issue_path, file_name="dataset\\all_data.csv"):
         user_confirmation = input("Is the data in: '" + file_name + "' (1-Yes, 0-No): \n")
 
         if user_confirmation == '0':
-            file_name = input("Enter the file path: \n") #in case we want to search in a different place
+            file_name = input("Enter the file path: \n")
 
             path=True
             user_confirmation = '1'

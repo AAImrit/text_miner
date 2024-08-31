@@ -99,16 +99,18 @@ def replace_and (sentence):
 
     opPosi = find_opening_posi(posi, sentence)[0]
     miniLeft = sentence[:opPosi] + "(?=.*" + sentence[opPosi:posi] + ")"
-    
+ 
     #for side left of &
     if sentence[posi+1] != "(": #missing opening bracket
         #this is not for full proofing, it only work in cases when there is one word for exampple (test&right)
         specialClosePosi = find_closing_posi(posi+1, sentence, special=True)
         if specialClosePosi[1]: #an opening was actually matching
             closePosi = specialClosePosi[0]
-            sentence = sentence[:posi+1] + "(" + sentence[posi+1:closePosi+1] + ")" + sentence[closePosi+1:]
+            print(sentence[posi+1:closePosi])
+            sentence = sentence[:posi+1] + "(" + sentence[posi+1:closePosi] + ")" + sentence[closePosi:]
             posi=sentence.find(AND_OP) #recalculating the position of the posi
 
+    print(sentence)
     closePosi = find_closing_posi(posi+1, sentence)[0]
     miniRigth = "(?=.*" + sentence[posi+1:closePosi+1] + ")" + sentence[closePosi+1:]
     
@@ -123,9 +125,10 @@ def make_regex_expression (user_expression):
     return final_regex
 
 if __name__ == '__main__':
-    sentence = "(pin&(lift|lead))|(test&right)"
+    #sentence = "(pin&(lift|lead))|(test&right)"
     #sentence = "(lift|lead)&pin"
-    #sentence = "(test&right)"
+    #sentence = "(test&right)|(right&left)"
+    sentence = "(test&right&left&center)"
     #sentence = "((pin)&(lift|lead))|((test)&(new))" #((?=*(pin))(?=*(lift|lead)))|((?=*(test))(?=*(new))) -> right expresion
     #sentence="(test|new)&(free|you)"
     #sentence="(test&new)"
